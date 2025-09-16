@@ -1,0 +1,8 @@
+.pagination a {
+	color: var(--primary-color);
+}
+
+.pagination li:hover a {
+	color: #fff;
+	background-color: var(--primary-color);
+}
