@@ -1,3 +1,4 @@
 {
-	"workbench.externalBrowser": "firefox"
+	"workbench.externalBrowser": "firefox",
+	"kiroAgent.configureMCP": "Disabled"
 }
