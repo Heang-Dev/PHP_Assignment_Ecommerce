@@ -1,0 +1,21 @@
+#login-form {
+    width: 50%;
+    margin: 5px auto;
+    text-align: center;
+    padding: 20px;
+    border-top: 1px solid #FB774B;
+}
+
+#login-form input {
+    width: 50%;
+    margin: 5px auto;
+}
+
+#login-form #login-btn {
+    background: #FB774B;
+    color: #FFF;
+}
+
+#login-form #register_url {
+    color: #FB774B;
+}
