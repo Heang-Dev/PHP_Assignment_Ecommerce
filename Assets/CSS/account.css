@@ -1,0 +1,482 @@
+/* ========================================
+   SHADCN-INSPIRED ACCOUNT PAGE STYLES
+   Modern, clean design with subtle shadows
+   ======================================== */
+
+/* CSS Variables - shadcn color palette */
+:root {
+	--background: 0 0% 100%;
+	--foreground: 222.2 84% 4.9%;
+	--card: 0 0% 100%;
+	--card-foreground: 222.2 84% 4.9%;
+	--primary: 221.2 83.2% 53.3%;
+	--primary-foreground: 210 40% 98%;
+	--secondary: 210 40% 96.1%;
+	--secondary-foreground: 222.2 47.4% 11.2%;
+	--muted: 210 40% 96.1%;
+	--muted-foreground: 215.4 16.3% 46.9%;
+	--accent: 210 40% 96.1%;
+	--accent-foreground: 222.2 47.4% 11.2%;
+	--destructive: 0 84.2% 60.2%;
+	--destructive-foreground: 210 40% 98%;
+	--border: 214.3 31.8% 91.4%;
+	--input: 214.3 31.8% 91.4%;
+	--ring: 221.2 83.2% 53.3%;
+	--radius: 0.5rem;
+}
+
+/* Account Section */
+.account-section {
+	margin-top: 100px;
+	min-height: 70vh;
+	padding: 2rem 0;
+	background: hsl(var(--background));
+}
+
+/* ========================================
+   CARD STYLES - shadcn inspired
+   ======================================== */
+.card {
+	background: hsl(var(--card));
+	border: 1px solid hsl(var(--border));
+	border-radius: var(--radius);
+	overflow: hidden;
+	transition: all 0.2s ease-in-out;
+	box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.card:hover {
+	box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.card-body {
+	padding: 1.5rem;
+}
+
+/* Card Header - subtle background */
+.card-header {
+	background: hsl(var(--muted));
+	color: hsl(var(--card-foreground));
+	font-weight: 600;
+	border: none;
+	border-bottom: 1px solid hsl(var(--border));
+	padding: 1rem 1.5rem;
+}
+
+.card-header h5 {
+	margin: 0;
+	font-size: 1.125rem;
+	font-weight: 600;
+	color: hsl(var(--foreground));
+}
+
+/* ========================================
+   PROFILE CARD
+   ======================================== */
+.text-center .ri-user-3-fill {
+	background: hsl(var(--primary));
+	color: hsl(var(--primary-foreground));
+	padding: 1.25rem;
+	border-radius: 50%;
+	width: 96px;
+	height: 96px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 2.5rem;
+	box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.card-title {
+	font-weight: 700;
+	color: hsl(var(--foreground));
+	margin-top: 1rem;
+	font-size: 1.25rem;
+}
+
+.card-text.small {
+	color: hsl(var(--muted-foreground));
+	font-size: 0.875rem;
+}
+
+/* ========================================
+   BUTTONS - shadcn style
+   ======================================== */
+.btn {
+	border-radius: var(--radius);
+	font-weight: 500;
+	font-size: 0.875rem;
+	padding: 0.625rem 1rem;
+	transition: all 0.15s ease-in-out;
+	border: 1px solid transparent;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+}
+
+.btn-outline-primary {
+	border: 1px solid hsl(var(--input));
+	background: hsl(var(--background));
+	color: hsl(var(--accent-foreground));
+}
+
+.btn-outline-primary:hover {
+	background: hsl(var(--accent));
+	color: hsl(var(--accent-foreground));
+}
+
+.btn-primary {
+	background: hsl(var(--primary));
+	color: hsl(var(--primary-foreground));
+	border: 1px solid hsl(var(--primary));
+}
+
+.btn-primary:hover {
+	background: hsl(var(--primary) / 0.9);
+	color: hsl(var(--primary-foreground));
+}
+
+.btn-outline-secondary {
+	border: 1px solid hsl(var(--input));
+	background: hsl(var(--background));
+	color: hsl(var(--secondary-foreground));
+}
+
+.btn-outline-secondary:hover {
+	background: hsl(var(--secondary));
+	color: hsl(var(--secondary-foreground));
+}
+
+.btn-danger {
+	background: hsl(var(--destructive));
+	color: hsl(var(--destructive-foreground));
+	border: 1px solid hsl(var(--destructive));
+}
+
+.btn-danger:hover {
+	background: hsl(var(--destructive) / 0.9);
+	color: hsl(var(--destructive-foreground));
+}
+
+.btn-sm {
+	padding: 0.5rem 0.875rem;
+	font-size: 0.8125rem;
+}
+
+.d-grid .btn {
+	width: 100%;
+}
+
+/* ========================================
+   ALERT MESSAGES - shadcn style
+   ======================================== */
+.alert {
+	border-radius: var(--radius);
+	border: 1px solid hsl(var(--border));
+	padding: 1rem;
+	font-size: 0.875rem;
+	line-height: 1.5;
+}
+
+.alert-danger {
+	background: hsl(0 84.2% 60.2% / 0.1);
+	color: hsl(0 84.2% 40%);
+	border-color: hsl(0 84.2% 60.2% / 0.3);
+}
+
+.alert-success {
+	background: hsl(142 76% 36% / 0.1);
+	color: hsl(142 76% 26%);
+	border-color: hsl(142 76% 36% / 0.3);
+}
+
+.alert-info {
+	background: hsl(var(--primary) / 0.1);
+	color: hsl(var(--primary));
+	border-color: hsl(var(--primary) / 0.3);
+}
+
+.alert-info a {
+	color: hsl(var(--primary));
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.alert-info a:hover {
+	color: hsl(var(--primary) / 0.8);
+}
+
+/* ========================================
+   ORDER CARDS - Modern grid layout
+   ======================================== */
+.order-card {
+	border: 1px solid hsl(var(--border));
+	border-radius: var(--radius);
+	transition: all 0.2s ease-in-out;
+	overflow: hidden;
+	background: hsl(var(--card));
+	box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+}
+
+.order-card:hover {
+	box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+	border-color: hsl(var(--primary) / 0.5);
+	transform: translateY(-2px);
+}
+
+.order-card .card-body {
+	padding: 1.5rem;
+}
+
+.order-card h6 {
+	font-size: 1rem;
+	font-weight: 600;
+	color: hsl(var(--foreground));
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	flex-wrap: wrap;
+}
+
+.order-card h5 {
+	font-weight: 700;
+	font-size: 1.5rem;
+	color: hsl(var(--primary));
+}
+
+.order-card .small {
+	line-height: 1.75;
+	color: hsl(var(--muted-foreground));
+	font-size: 0.875rem;
+}
+
+.order-card i {
+	color: hsl(var(--primary));
+	font-size: 0.875rem;
+}
+
+/* ========================================
+   STATUS BADGES - Modern design
+   ======================================== */
+.status-badge {
+	font-size: 0.75rem;
+	padding: 0.25rem 0.625rem;
+	font-weight: 600;
+	border-radius: calc(var(--radius) - 2px);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.badge.bg-warning {
+	background: hsl(38 92% 50%) !important;
+	color: hsl(var(--background)) !important;
+}
+
+.badge.bg-success {
+	background: hsl(142 76% 36%) !important;
+	color: hsl(var(--background)) !important;
+}
+
+.badge.bg-secondary {
+	background: hsl(var(--secondary)) !important;
+	color: hsl(var(--secondary-foreground)) !important;
+}
+
+/* ========================================
+   SECTION HEADERS
+   ======================================== */
+h3 {
+	font-weight: 700;
+	color: hsl(var(--foreground));
+	font-size: 1.875rem;
+	margin-bottom: 1.5rem;
+	letter-spacing: -0.025em;
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+h3 i {
+	color: hsl(var(--primary));
+	font-size: 1.75rem;
+}
+
+/* ========================================
+   FORM ELEMENTS - shadcn style
+   ======================================== */
+.form-label {
+	font-weight: 600;
+	color: hsl(var(--foreground));
+	margin-bottom: 0.5rem;
+	font-size: 0.875rem;
+}
+
+.form-control {
+	border: 1px solid hsl(var(--input));
+	border-radius: var(--radius);
+	padding: 0.625rem 0.875rem;
+	transition: all 0.15s ease-in-out;
+	background: hsl(var(--background));
+	color: hsl(var(--foreground));
+	font-size: 0.875rem;
+}
+
+.form-control:focus {
+	border-color: hsl(var(--ring));
+	outline: none;
+	box-shadow: 0 0 0 3px hsl(var(--ring) / 0.1);
+}
+
+.form-control::placeholder {
+	color: hsl(var(--muted-foreground));
+}
+
+.form-text {
+	font-size: 0.8125rem;
+	color: hsl(var(--muted-foreground));
+	margin-top: 0.25rem;
+}
+
+/* ========================================
+   SUBMIT BUTTONS
+   ======================================== */
+button[type="submit"],
+input[type="submit"] {
+	background: hsl(var(--primary));
+	border: 1px solid hsl(var(--primary));
+	color: hsl(var(--primary-foreground));
+	padding: 0.625rem 1.5rem;
+	border-radius: var(--radius);
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.15s ease-in-out;
+	font-size: 0.875rem;
+}
+
+button[type="submit"]:hover,
+input[type="submit"]:hover {
+	background: hsl(var(--primary) / 0.9);
+	color: hsl(var(--primary-foreground));
+}
+
+button[type="submit"]:active,
+input[type="submit"]:active {
+	transform: scale(0.98);
+}
+
+/* ========================================
+   TEXT UTILITIES
+   ======================================== */
+.text-primary {
+	color: hsl(var(--primary)) !important;
+}
+
+.text-muted {
+	color: hsl(var(--muted-foreground)) !important;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+@media (max-width: 768px) {
+	.account-section {
+		margin-top: 80px;
+		padding: 1rem 0;
+	}
+
+	.order-card {
+		margin-bottom: 1rem;
+	}
+
+	.order-card:hover {
+		transform: translateY(-1px);
+	}
+
+	h3 {
+		font-size: 1.5rem;
+	}
+
+	h3 i {
+		font-size: 1.5rem;
+	}
+
+	.card-body {
+		padding: 1rem;
+	}
+
+	.order-card .card-body {
+		padding: 1rem;
+	}
+}
+
+@media (max-width: 576px) {
+	h3 {
+		font-size: 1.25rem;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.5rem;
+	}
+
+	.text-center .ri-user-3-fill {
+		width: 80px;
+		height: 80px;
+		font-size: 2rem;
+	}
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+a {
+	text-decoration: none;
+	color: hsl(var(--primary));
+}
+
+a:hover {
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.row.g-3 {
+	gap: 1rem;
+}
+
+/* Smooth transitions */
+* {
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================================
+   PROFILE CARD SPECIAL STYLING
+   ======================================== */
+.text-center.card {
+	border: 1px solid hsl(var(--border));
+	background: linear-gradient(to bottom, hsl(var(--muted)), hsl(var(--background)));
+}
+
+/* ========================================
+   EMPTY STATE
+   ======================================== */
+.col-12.text-center.py-5 {
+	min-height: 400px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+/* ========================================
+   FOCUS VISIBLE (Accessibility)
+   ======================================== */
+*:focus-visible {
+	outline: 2px solid hsl(var(--ring));
+	outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible {
+	outline: 2px solid hsl(var(--ring));
+	outline-offset: 2px;
+}

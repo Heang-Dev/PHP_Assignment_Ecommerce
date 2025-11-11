@@ -1,3 +1,50 @@
+<?php
+/**
+ * E-Commerce Homepage
+ * Displays featured products and products by category (bags, hats, watches)
+ */
+
+// Start session
+session_start();
+
+// Include database connection
+include('server/connection.php');
+
+// Include featured products
+include('server/get_featured_products.php');
+
+// Get products by category
+try {
+    // Fetch bags
+    $stmt = $conn->prepare("SELECT * FROM products WHERE product_category = :category LIMIT 4");
+    $stmt->execute([':category' => 'bags']);
+    $bag_products = $stmt->fetchAll();
+
+    // Fetch hats
+    $stmt = $conn->prepare("SELECT * FROM products WHERE product_category = :category LIMIT 4");
+    $stmt->execute([':category' => 'hats']);
+    $hat_products = $stmt->fetchAll();
+
+    // Fetch watches
+    $stmt = $conn->prepare("SELECT * FROM products WHERE product_category = :category LIMIT 4");
+    $stmt->execute([':category' => 'watches']);
+    $watch_products = $stmt->fetchAll();
+
+} catch (PDOException $e) {
+    $error_message = "Error fetching products: " . $e->getMessage();
+    $bag_products = [];
+    $hat_products = [];
+    $watch_products = [];
+}
+
+// Calculate cart count
+$cart_count = 0;
+if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
+    foreach ($_SESSION['cart'] as $item) {
+        $cart_count += isset($item['product_quantity']) ? $item['product_quantity'] : 1;
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -31,7 +78,7 @@
 			<div class="container">
 				<a
 					class="navbar-brand d-flex align-items-center"
-					href="index.html"
+					href="index.php"
 					aria-label="eShop home">
 					<img
 						src="Assets/Images/logo.jpeg"
@@ -58,28 +105,28 @@
 							<a
 								class="nav-link px-3 active"
 								aria-current="page"
-								href="index.html"
+								href="index.php"
 								>Home</a
 							>
 						</li>
 						<li class="nav-item">
 							<a
 								class="nav-link px-3"
-								href="shop.html"
+								href="shop.php"
 								>Shop</a
 							>
 						</li>
 						<li class="nav-item">
 							<a
 								class="nav-link px-3"
-								href="blog.html"
+								href="blog.php"
 								>Blog</a
 							>
 						</li>
 						<li class="nav-item">
 							<a
 								class="nav-link px-3"
-								href="contact.html"
+								href="contact.php"
 								>Contact Us</a
 							>
 						</li>
@@ -87,20 +134,22 @@
 					<div
 						class="d-flex align-items-center justify-content-center justify-content-lg-end gap-3 ms-lg-3">
 						<a
-							href="cart.html"
+							href="cart.php"
 							class="text-dark position-relative"
 							aria-label="View cart">
 							<i class="ri-shopping-basket-2-line fs-5"></i>
+							<?php if ($cart_count > 0): ?>
 							<span
 								class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger px-1 py-0">
-								2
+								<?php echo $cart_count; ?>
 								<span class="visually-hidden"
 									>items in cart</span
 								>
 							</span>
+							<?php endif; ?>
 						</a>
 						<a
-							href="account.html"
+							href="account.php"
 							class="text-dark"
 							aria-label="Account">
 							<i class="ri-user-3-line fs-5"></i>
@@ -205,70 +254,32 @@
 				</p>
 			</div>
 			<div class="row mx-auto container-fluid">
-				<div class="product text-center col-md-4 col-sm-12 col-lg-3">
-					<img
-						src="Assets/Images/featured_1.png"
-						alt=""
-						class="img-fluid mb-3" />
-					<div class="star">
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
+				<?php if (!empty($featured_products)): ?>
+					<?php foreach ($featured_products as $product): ?>
+						<div class="product text-center col-md-4 col-sm-12 col-lg-3">
+							<img
+								src="Assets/Images/<?php echo htmlspecialchars($product['product_image']); ?>"
+								alt="<?php echo htmlspecialchars($product['product_name']); ?>"
+								class="img-fluid mb-3" />
+							<div class="star">
+								<i class="ri-star-line"></i>
+								<i class="ri-star-line"></i>
+								<i class="ri-star-line"></i>
+								<i class="ri-star-line"></i>
+								<i class="ri-star-line"></i>
+							</div>
+							<h5 class="p-name"><?php echo htmlspecialchars($product['product_name']); ?></h5>
+							<h4 class="p-price">$<?php echo number_format($product['product_price'], 2); ?></h4>
+							<a href="single_product.php?product_id=<?php echo $product['product_id']; ?>">
+								<button class="buy-btn">Buy Now</button>
+							</a>
+						</div>
+					<?php endforeach; ?>
+				<?php else: ?>
+					<div class="col-12 text-center">
+						<p>No featured products available at the moment.</p>
 					</div>
-					<h5 class="p-name">Sport Shoe</h5>
-					<h4 class="p-price">$199.49</h4>
-					<button class="buy-btn">Buy Now</button>
-				</div>
-				<div class="product text-center col-md-4 col-sm-12 col-lg-3">
-					<img
-						src="Assets/Images/featured_2.png"
-						alt=""
-						class="img-fluid mb-3" />
-					<div class="star">
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-					</div>
-					<h5 class="p-name">Sport Shoe</h5>
-					<h4 class="p-price">$199.49</h4>
-					<button class="buy-btn">Buy Now</button>
-				</div>
-				<div class="product text-center col-md-4 col-sm-12 col-lg-3">
-					<img
-						src="Assets/Images/featured_3.png"
-						alt=""
-						class="img-fluid mb-3" />
-					<div class="star">
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-					</div>
-					<h5 class="p-name">Sport Shoe</h5>
-					<h4 class="p-price">$199.49</h4>
-					<button class="buy-btn">Buy Now</button>
-				</div>
-				<div class="product text-center col-md-4 col-sm-12 col-lg-3">
-					<img
-						src="Assets/Images/featured_4.png"
-						alt=""
-						class="img-fluid mb-3" />
-					<div class="star">
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-					</div>
-					<h5 class="p-name">Sport Shoe</h5>
-					<h4 class="p-price">$199.49</h4>
-					<button class="buy-btn">Buy Now</button>
-				</div>
+				<?php endif; ?>
 			</div>
 		</section>
 
@@ -301,70 +312,32 @@
 				</p>
 			</div>
 			<div class="row mx-auto container-fluid">
-				<div class="product text-center col-md-4 col-sm-12 col-lg-3">
-					<img
-						src="Assets/Images/bag_1.png"
-						alt=""
-						class="img-fluid mb-3" />
-					<div class="star">
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
+				<?php if (!empty($bag_products)): ?>
+					<?php foreach ($bag_products as $product): ?>
+						<div class="product text-center col-md-4 col-sm-12 col-lg-3">
+							<img
+								src="Assets/Images/<?php echo htmlspecialchars($product['product_image']); ?>"
+								alt="<?php echo htmlspecialchars($product['product_name']); ?>"
+								class="img-fluid mb-3" />
+							<div class="star">
+								<i class="ri-star-line"></i>
+								<i class="ri-star-line"></i>
+								<i class="ri-star-line"></i>
+								<i class="ri-star-line"></i>
+								<i class="ri-star-line"></i>
+							</div>
+							<h5 class="p-name"><?php echo htmlspecialchars($product['product_name']); ?></h5>
+							<h4 class="p-price">$<?php echo number_format($product['product_price'], 2); ?></h4>
+							<a href="single_product.php?product_id=<?php echo $product['product_id']; ?>">
+								<button class="buy-btn">Buy Now</button>
+							</a>
+						</div>
+					<?php endforeach; ?>
+				<?php else: ?>
+					<div class="col-12 text-center">
+						<p>No bags available at the moment.</p>
 					</div>
-					<h5 class="p-name">Sport Shoe</h5>
-					<h4 class="p-price">$199.49</h4>
-					<button class="buy-btn">Buy Now</button>
-				</div>
-				<div class="product text-center col-md-4 col-sm-12 col-lg-3">
-					<img
-						src="Assets/Images/bag_2.png"
-						alt=""
-						class="img-fluid mb-3" />
-					<div class="star">
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-					</div>
-					<h5 class="p-name">Sport Shoe</h5>
-					<h4 class="p-price">$199.49</h4>
-					<button class="buy-btn">Buy Now</button>
-				</div>
-				<div class="product text-center col-md-4 col-sm-12 col-lg-3">
-					<img
-						src="Assets/Images/bag_3.png"
-						alt=""
-						class="img-fluid mb-3" />
-					<div class="star">
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-					</div>
-					<h5 class="p-name">Sport Shoe</h5>
-					<h4 class="p-price">$199.49</h4>
-					<button class="buy-btn">Buy Now</button>
-				</div>
-				<div class="product text-center col-md-4 col-sm-12 col-lg-3">
-					<img
-						src="Assets/Images/bag_4.png"
-						alt=""
-						class="img-fluid mb-3" />
-					<div class="star">
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-					</div>
-					<h5 class="p-name">Sport Shoe</h5>
-					<h4 class="p-price">$199.49</h4>
-					<button class="buy-btn">Buy Now</button>
-				</div>
+				<?php endif; ?>
 			</div>
 		</section>
 
@@ -383,70 +356,32 @@
 				</p>
 			</div>
 			<div class="row mx-auto container-fluid">
-				<div class="product text-center col-md-4 col-sm-12 col-lg-3">
-					<img
-						src="Assets/Images/hat_1.png"
-						alt=""
-						class="img-fluid mb-3" />
-					<div class="star">
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
+				<?php if (!empty($hat_products)): ?>
+					<?php foreach ($hat_products as $product): ?>
+						<div class="product text-center col-md-4 col-sm-12 col-lg-3">
+							<img
+								src="Assets/Images/<?php echo htmlspecialchars($product['product_image']); ?>"
+								alt="<?php echo htmlspecialchars($product['product_name']); ?>"
+								class="img-fluid mb-3" />
+							<div class="star">
+								<i class="ri-star-line"></i>
+								<i class="ri-star-line"></i>
+								<i class="ri-star-line"></i>
+								<i class="ri-star-line"></i>
+								<i class="ri-star-line"></i>
+							</div>
+							<h5 class="p-name"><?php echo htmlspecialchars($product['product_name']); ?></h5>
+							<h4 class="p-price">$<?php echo number_format($product['product_price'], 2); ?></h4>
+							<a href="single_product.php?product_id=<?php echo $product['product_id']; ?>">
+								<button class="buy-btn">Buy Now</button>
+							</a>
+						</div>
+					<?php endforeach; ?>
+				<?php else: ?>
+					<div class="col-12 text-center">
+						<p>No hats available at the moment.</p>
 					</div>
-					<h5 class="p-name">Sport Shoe</h5>
-					<h4 class="p-price">$199.49</h4>
-					<button class="buy-btn">Buy Now</button>
-				</div>
-				<div class="product text-center col-md-4 col-sm-12 col-lg-3">
-					<img
-						src="Assets/Images/hat_2.png"
-						alt=""
-						class="img-fluid mb-3" />
-					<div class="star">
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-					</div>
-					<h5 class="p-name">Sport Shoe</h5>
-					<h4 class="p-price">$199.49</h4>
-					<button class="buy-btn">Buy Now</button>
-				</div>
-				<div class="product text-center col-md-4 col-sm-12 col-lg-3">
-					<img
-						src="Assets/Images/hat_3.png"
-						alt=""
-						class="img-fluid mb-3" />
-					<div class="star">
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-					</div>
-					<h5 class="p-name">Sport Shoe</h5>
-					<h4 class="p-price">$199.49</h4>
-					<button class="buy-btn">Buy Now</button>
-				</div>
-				<div class="product text-center col-md-4 col-sm-12 col-lg-3">
-					<img
-						src="Assets/Images/hat_4.png"
-						alt=""
-						class="img-fluid mb-3" />
-					<div class="star">
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-					</div>
-					<h5 class="p-name">Sport Shoe</h5>
-					<h4 class="p-price">$199.49</h4>
-					<button class="buy-btn">Buy Now</button>
-				</div>
+				<?php endif; ?>
 			</div>
 		</section>
 
@@ -465,70 +400,32 @@
 				</p>
 			</div>
 			<div class="row mx-auto container-fluid">
-				<div class="product text-center col-md-4 col-sm-12 col-lg-3">
-					<img
-						src="Assets/Images/watch_1.png"
-						alt=""
-						class="img-fluid mb-3" />
-					<div class="star">
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
+				<?php if (!empty($watch_products)): ?>
+					<?php foreach ($watch_products as $product): ?>
+						<div class="product text-center col-md-4 col-sm-12 col-lg-3">
+							<img
+								src="Assets/Images/<?php echo htmlspecialchars($product['product_image']); ?>"
+								alt="<?php echo htmlspecialchars($product['product_name']); ?>"
+								class="img-fluid mb-3" />
+							<div class="star">
+								<i class="ri-star-line"></i>
+								<i class="ri-star-line"></i>
+								<i class="ri-star-line"></i>
+								<i class="ri-star-line"></i>
+								<i class="ri-star-line"></i>
+							</div>
+							<h5 class="p-name"><?php echo htmlspecialchars($product['product_name']); ?></h5>
+							<h4 class="p-price">$<?php echo number_format($product['product_price'], 2); ?></h4>
+							<a href="single_product.php?product_id=<?php echo $product['product_id']; ?>">
+								<button class="buy-btn">Buy Now</button>
+							</a>
+						</div>
+					<?php endforeach; ?>
+				<?php else: ?>
+					<div class="col-12 text-center">
+						<p>No watches available at the moment.</p>
 					</div>
-					<h5 class="p-name">Sport Shoe</h5>
-					<h4 class="p-price">$199.49</h4>
-					<button class="buy-btn">Buy Now</button>
-				</div>
-				<div class="product text-center col-md-4 col-sm-12 col-lg-3">
-					<img
-						src="Assets/Images/watch_2.png"
-						alt=""
-						class="img-fluid mb-3" />
-					<div class="star">
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-					</div>
-					<h5 class="p-name">Sport Shoe</h5>
-					<h4 class="p-price">$199.49</h4>
-					<button class="buy-btn">Buy Now</button>
-				</div>
-				<div class="product text-center col-md-4 col-sm-12 col-lg-3">
-					<img
-						src="Assets/Images/watch_3.png"
-						alt=""
-						class="img-fluid mb-3" />
-					<div class="star">
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-					</div>
-					<h5 class="p-name">Sport Shoe</h5>
-					<h4 class="p-price">$199.49</h4>
-					<button class="buy-btn">Buy Now</button>
-				</div>
-				<div class="product text-center col-md-4 col-sm-12 col-lg-3">
-					<img
-						src="Assets/Images/watch_4.png"
-						alt=""
-						class="img-fluid mb-3" />
-					<div class="star">
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-					</div>
-					<h5 class="p-name">Sport Shoe</h5>
-					<h4 class="p-price">$199.49</h4>
-					<button class="buy-btn">Buy Now</button>
-				</div>
+				<?php endif; ?>
 			</div>
 		</section>
 

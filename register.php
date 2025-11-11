@@ -1,3 +1,96 @@
+<?php
+/**
+ * User Registration Page
+ */
+
+session_start();
+
+// If user is already logged in, redirect to account page
+if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+    header('Location: account.php');
+    exit();
+}
+
+// Include database connection
+include('server/connection.php');
+
+// Initialize variables
+$error_message = '';
+$success_message = '';
+
+// Process registration form
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
+
+    $name = trim($_POST['name']);
+    $email = trim($_POST['email']);
+    $password = $_POST['password'];
+    $confirm_password = $_POST['confirm-password'];
+
+    // Validation
+    if (empty($name) || empty($email) || empty($password) || empty($confirm_password)) {
+        $error_message = "All fields are required.";
+    }
+    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error_message = "Please enter a valid email address.";
+    }
+    elseif (strlen($password) < 6) {
+        $error_message = "Password must be at least 6 characters long.";
+    }
+    elseif ($password !== $confirm_password) {
+        $error_message = "Passwords do not match.";
+    }
+    else {
+        try {
+            // Check if email already exists
+            $check_stmt = $conn->prepare("SELECT user_id FROM users WHERE user_email = :email");
+            $check_stmt->execute([':email' => $email]);
+
+            if ($check_stmt->fetch()) {
+                $error_message = "Email already registered. Please use a different email or <a href='login.php'>login</a>.";
+            } else {
+                // Hash password using bcrypt (more secure than MD5)
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+                // Insert new user
+                $insert_stmt = $conn->prepare("
+                    INSERT INTO users (user_name, user_email, user_password)
+                    VALUES (:name, :email, :password)
+                ");
+
+                $insert_stmt->execute([
+                    ':name' => $name,
+                    ':email' => $email,
+                    ':password' => $hashed_password
+                ]);
+
+                // Get the newly created user ID
+                $user_id = $conn->lastInsertId();
+
+                // Auto-login after successful registration
+                $_SESSION['user_id'] = $user_id;
+                $_SESSION['user_name'] = $name;
+                $_SESSION['user_email'] = $email;
+                $_SESSION['logged_in'] = true;
+
+                // Redirect to account page
+                header('Location: account.php?success=Registration successful! Welcome to eShop.');
+                exit();
+            }
+
+        } catch (PDOException $e) {
+            $error_message = "Registration failed. Please try again.";
+        }
+    }
+}
+
+// Handle error/success messages from URL parameters
+if (isset($_GET['error'])) {
+    $error_message = htmlspecialchars($_GET['error']);
+}
+if (isset($_GET['success'])) {
+    $success_message = htmlspecialchars($_GET['success']);
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -8,7 +101,7 @@
 		<meta
 			http-equiv="X-UA-Compatible"
 			content="ie=edge" />
-		<title>Heang's E-Shop</title>
+		<title>Register - Heang's E-Shop</title>
 		<link
 			href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
 			rel="stylesheet"
@@ -25,7 +118,7 @@
 			href="Assets/CSS/style.css" />
 		<link
 			rel="stylesheet"
-			href="Assets/CSS/single_product.css" />
+			href="Assets/CSS/register.css" />
 	</head>
 	<body>
 		<!--NAVIGATION BAR-->
@@ -34,7 +127,7 @@
 			<div class="container">
 				<a
 					class="navbar-brand d-flex align-items-center"
-					href="index.html"
+					href="index.php"
 					aria-label="eShop home">
 					<img
 						src="Assets/Images/logo.jpeg"
@@ -59,30 +152,29 @@
 					<ul class="navbar-nav mx-lg-auto mb-2 mb-lg-0 gap-lg-2">
 						<li class="nav-item">
 							<a
-								class="nav-link px-3 active"
-								aria-current="page"
-								href="index.html"
+								class="nav-link px-3"
+								href="index.php"
 								>Home</a
 							>
 						</li>
 						<li class="nav-item">
 							<a
 								class="nav-link px-3"
-								href="shop.html"
+								href="shop.php"
 								>Shop</a
 							>
 						</li>
 						<li class="nav-item">
 							<a
 								class="nav-link px-3"
-								href="blog.html"
+								href="blog.php"
 								>Blog</a
 							>
 						</li>
 						<li class="nav-item">
 							<a
 								class="nav-link px-3"
-								href="contact.html"
+								href="contact.php"
 								>Contact Us</a
 							>
 						</li>
@@ -90,20 +182,20 @@
 					<div
 						class="d-flex align-items-center justify-content-center justify-content-lg-end gap-3 ms-lg-3">
 						<a
-							href="cart.html"
+							href="cart.php"
 							class="text-dark position-relative"
 							aria-label="View cart">
 							<i class="ri-shopping-basket-2-line fs-5"></i>
-							<span
-								class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger px-1 py-0">
-								2
-								<span class="visually-hidden"
-									>items in cart</span
-								>
-							</span>
+							<?php if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0): ?>
+								<span
+									class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger px-1 py-0">
+									<?php echo count($_SESSION['cart']); ?>
+									<span class="visually-hidden">items in cart</span>
+								</span>
+							<?php endif; ?>
 						</a>
 						<a
-							href="account.html"
+							href="account.php"
 							class="text-dark"
 							aria-label="Account">
 							<i class="ri-user-3-line fs-5"></i>
@@ -113,144 +205,88 @@
 			</div>
 		</nav>
 
-		<!-- SINGLE PRODUCT -->
-		<section
-			id="single_product"
-			class="container single-product my-5 pt-5">
-			<div class="row mt-5">
-				<div class="col-lg-5 col-md-6 col-sm-12">
-					<img
-						src="Assets/Images/featured_1.png"
-						alt="Product Image"
-						id="mainImg"
-						class="img-fluid w-100 pb-1" />
-					<div class="small-img-group">
-						<div class="small-img-col">
-							<img
-								src="Assets/Images/featured_1.png"
-								alt="Product Image 1"
-								class="small-img img-fluid w-100" />
-						</div>
-						<div class="small-img-col">
-							<img
-								src="Assets/Images/featured_2.png"
-								alt="Product Image 2"
-								class="small-img img-fluid w-100" />
-						</div>
-						<div class="small-img-col">
-							<img
-								src="Assets/Images/featured_3.png"
-								alt="Product Image 3"
-								class="small-img img-fluid w-100" />
-						</div>
-						<div class="small-img-col">
-							<img
-								src="Assets/Images/featured_4.png"
-								alt="Product Image 4"
-								class="small-img img-fluid w-100" />
-						</div>
-					</div>
-				</div>
-
-				<div class="col-lg-6 col-md-12 col-12">
-					<h6>Men/Shoe</h6>
-					<h3 class="py-4">Red Shoe</h3>
-					<h2>$50.00</h2>
-					<input
-						type="number"
-						value="1" />
-					<button class="buy-btn ms-2 px-3 py-2">Add To Cart</button>
-					<h4 class="my-5">Product Details</h4>
-					<span
-						>These red shoes are perfect for adding a pop of color
-						to your outfit. Made from high-quality materials, they
-						offer both style and comfort. Whether you're dressing up
-						for a special occasion or just want to make a statement,
-						these shoes are a great choice.
-					</span>
-				</div>
-			</div>
-		</section>
-
-		<!--RELATED PRODUCTS-->
-		<section
-			id="related-products"
-			class="my-5 pb-5">
-			<div class="text-center container mt-5 py-5">
-				<h3>Related Products</h3>
+		<section class="my-5 py-5">
+			<div class="container text-center mt-3 pt-5">
+				<h2 class="form-weight-bold">Register</h2>
 				<hr class="mx-auto" />
-				<p>
-					Our featured products are handpicked by our team of experts.
-					We have a wide range of products for you to choose from. We
-					also have a special offer for you. If you buy 2 products,
-					you will get 1 product for free.
-				</p>
 			</div>
-			<div class="row mx-auto container-fluid">
-				<div class="product text-center col-md-4 col-sm-12 col-lg-3">
-					<img
-						src="Assets/Images/featured_1.png"
-						alt=""
-						class="img-fluid mb-3" />
-					<div class="star">
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
+			<div class="mx-auto container">
+				<?php if (!empty($error_message)): ?>
+					<div class="alert alert-danger alert-dismissible fade show" role="alert">
+						<i class="ri-error-warning-line me-2"></i>
+						<?php echo $error_message; ?>
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 					</div>
-					<h5 class="p-name">Sport Shoe</h5>
-					<h4 class="p-price">$199.49</h4>
-					<button class="buy-btn">Buy Now</button>
-				</div>
-				<div class="product text-center col-md-4 col-sm-12 col-lg-3">
-					<img
-						src="Assets/Images/featured_2.png"
-						alt=""
-						class="img-fluid mb-3" />
-					<div class="star">
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
+				<?php endif; ?>
+
+				<?php if (!empty($success_message)): ?>
+					<div class="alert alert-success alert-dismissible fade show" role="alert">
+						<i class="ri-checkbox-circle-line me-2"></i>
+						<?php echo $success_message; ?>
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 					</div>
-					<h5 class="p-name">Sport Shoe</h5>
-					<h4 class="p-price">$199.49</h4>
-					<button class="buy-btn">Buy Now</button>
-				</div>
-				<div class="product text-center col-md-4 col-sm-12 col-lg-3">
-					<img
-						src="Assets/Images/featured_3.png"
-						alt=""
-						class="img-fluid mb-3" />
-					<div class="star">
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
+				<?php endif; ?>
+
+				<form id="register-form" method="POST" action="register.php">
+					<div class="form-group">
+						<label>Name</label>
+						<input
+							type="text"
+							class="form-control"
+							id="register-name"
+							name="name"
+							placeholder="Name"
+							value="<?php echo isset($_POST['name']) ? htmlspecialchars($_POST['name']) : ''; ?>"
+							required />
 					</div>
-					<h5 class="p-name">Sport Shoe</h5>
-					<h4 class="p-price">$199.49</h4>
-					<button class="buy-btn">Buy Now</button>
-				</div>
-				<div class="product text-center col-md-4 col-sm-12 col-lg-3">
-					<img
-						src="Assets/Images/featured_4.png"
-						alt=""
-						class="img-fluid mb-3" />
-					<div class="star">
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
-						<i class="ri-star-line"></i>
+					<div class="form-group">
+						<label>Email</label>
+						<input
+							type="email"
+							class="form-control"
+							id="register-email"
+							name="email"
+							placeholder="Email"
+							value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>"
+							required />
 					</div>
-					<h5 class="p-name">Sport Shoe</h5>
-					<h4 class="p-price">$199.49</h4>
-					<button class="buy-btn">Buy Now</button>
-				</div>
+					<div class="form-group">
+						<label>Password</label>
+						<input
+							type="password"
+							class="form-control"
+							id="register-password"
+							name="password"
+							placeholder="Password"
+							required />
+						<small class="form-text text-muted">Minimum 6 characters</small>
+					</div>
+					<div class="form-group">
+						<label>Confirm Password</label>
+						<input
+							type="password"
+							class="form-control"
+							id="register-confirm-password"
+							name="confirm-password"
+							placeholder="Confirm Password"
+							required />
+					</div>
+					<div class="form-group">
+						<input
+							type="submit"
+							class="btn"
+							id="register-btn"
+							name="register"
+							value="Register" />
+					</div>
+					<div>
+						<a
+							href="login.php"
+							id="register_url"
+							>Have an account? Login</a
+						>
+					</div>
+				</form>
 			</div>
 		</section>
 
@@ -276,36 +312,29 @@
 							<li class="mb-2">
 								<a
 									class="text-decoration-none text-white-50"
-									href="#"
-									>Men</a
+									href="shop.php?category=shoes"
+									>Shoes</a
 								>
 							</li>
 							<li class="mb-2">
 								<a
 									class="text-decoration-none text-white-50"
-									href="#"
-									>Women</a
+									href="shop.php?category=bags"
+									>Bags</a
 								>
 							</li>
 							<li class="mb-2">
 								<a
 									class="text-decoration-none text-white-50"
-									href="#"
-									>Boys</a
-								>
-							</li>
-							<li class="mb-2">
-								<a
-									class="text-decoration-none text-white-50"
-									href="#"
-									>Girls</a
+									href="shop.php?category=hats"
+									>Hats</a
 								>
 							</li>
 							<li>
 								<a
 									class="text-decoration-none text-white-50"
-									href="#"
-									>Shoes</a
+									href="shop.php?category=watches"
+									>Watches</a
 								>
 							</li>
 						</ul>
@@ -405,16 +434,5 @@
 			src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
 			integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
 			crossorigin="anonymous"></script>
-
-		<script>
-			var mainImg = document.getElementById("mainImg");
-			var smallImg = document.getElementsByClassName("small-img");
-
-			for (let i = 0; i < smallImg.length; i++) {
-				smallImg[i].onclick = function () {
-					mainImg.src = smallImg[i].src;
-				};
-			}
-		</script>
 	</body>
 </html>

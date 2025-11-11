@@ -1,3 +1,49 @@
+<?php
+/**
+ * Payment Confirmation Page
+ * Displays order confirmation after successful checkout
+ */
+
+session_start();
+
+// Check if order was placed
+if (!isset($_SESSION['order_id'])) {
+    header('Location: shop.php');
+    exit();
+}
+
+// Get order details from session
+$order_id = $_SESSION['order_id'];
+$order_total = isset($_SESSION['order_cost']) ? $_SESSION['order_cost'] : 0;
+$order_status = isset($_SESSION['order_status']) ? $_SESSION['order_status'] : 'on_hold';
+
+// Calculate cart count for navigation (from current cart, if any)
+$cart_count = 0;
+if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
+    foreach ($_SESSION['cart'] as $item) {
+        $cart_count += isset($item['product_quantity']) ? $item['product_quantity'] : 0;
+    }
+}
+
+// Store order info temporarily before clearing cart
+$temp_order_id = $order_id;
+$temp_order_total = $order_total;
+$temp_order_status = $order_status;
+
+// Clear cart after displaying confirmation
+unset($_SESSION['cart']);
+unset($_SESSION['cart_subtotal']);
+unset($_SESSION['cart_tax']);
+unset($_SESSION['cart_total']);
+
+// Clear order session data
+unset($_SESSION['order_id']);
+unset($_SESSION['order_cost']);
+unset($_SESSION['order_status']);
+
+// Reset cart count after clearing
+$cart_count = 0;
+?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -8,7 +54,7 @@
 		<meta
 			http-equiv="X-UA-Compatible"
 			content="ie=edge" />
-		<title>Heang's E-Shop</title>
+		<title>Order Confirmation - Heang's E-Shop</title>
 		<link
 			href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
 			rel="stylesheet"
@@ -23,9 +69,55 @@
 		<link
 			rel="stylesheet"
 			href="Assets/CSS/style.css" />
-		<link
-			rel="stylesheet"
-			href="Assets/CSS/login.css" />
+		<style>
+			.confirmation-section {
+				margin-top: 100px;
+				min-height: 60vh;
+			}
+			.confirmation-card {
+				max-width: 600px;
+				margin: 0 auto;
+				box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+			}
+			.success-icon {
+				font-size: 80px;
+				color: #28a745;
+			}
+			.order-details {
+				background-color: #f8f9fa;
+				padding: 1.5rem;
+				border-radius: 8px;
+				margin: 1rem 0;
+			}
+			.order-details-item {
+				display: flex;
+				justify-content: space-between;
+				padding: 0.5rem 0;
+				border-bottom: 1px solid #dee2e6;
+			}
+			.order-details-item:last-child {
+				border-bottom: none;
+			}
+			.order-total {
+				font-size: 1.5rem;
+				color: #28a745;
+				font-weight: bold;
+			}
+			.status-badge {
+				display: inline-block;
+				padding: 0.5rem 1rem;
+				border-radius: 20px;
+				font-size: 0.875rem;
+				font-weight: 600;
+			}
+			.status-on-hold {
+				background-color: #fff3cd;
+				color: #856404;
+			}
+			.action-buttons {
+				margin-top: 2rem;
+			}
+		</style>
 	</head>
 	<body>
 		<!--NAVIGATION BAR-->
@@ -34,7 +126,7 @@
 			<div class="container">
 				<a
 					class="navbar-brand d-flex align-items-center"
-					href="index.html"
+					href="index.php"
 					aria-label="eShop home">
 					<img
 						src="Assets/Images/logo.jpeg"
@@ -59,30 +151,29 @@
 					<ul class="navbar-nav mx-lg-auto mb-2 mb-lg-0 gap-lg-2">
 						<li class="nav-item">
 							<a
-								class="nav-link px-3 active"
-								aria-current="page"
-								href="index.html"
+								class="nav-link px-3"
+								href="index.php"
 								>Home</a
 							>
 						</li>
 						<li class="nav-item">
 							<a
 								class="nav-link px-3"
-								href="shop.html"
+								href="shop.php"
 								>Shop</a
 							>
 						</li>
 						<li class="nav-item">
 							<a
 								class="nav-link px-3"
-								href="blog.html"
+								href="blog.php"
 								>Blog</a
 							>
 						</li>
 						<li class="nav-item">
 							<a
 								class="nav-link px-3"
-								href="contact.html"
+								href="contact.php"
 								>Contact Us</a
 							>
 						</li>
@@ -90,20 +181,22 @@
 					<div
 						class="d-flex align-items-center justify-content-center justify-content-lg-end gap-3 ms-lg-3">
 						<a
-							href="cart.html"
+							href="cart.php"
 							class="text-dark position-relative"
 							aria-label="View cart">
 							<i class="ri-shopping-basket-2-line fs-5"></i>
+							<?php if ($cart_count > 0): ?>
 							<span
 								class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger px-1 py-0">
-								2
+								<?php echo $cart_count; ?>
 								<span class="visually-hidden"
 									>items in cart</span
 								>
 							</span>
+							<?php endif; ?>
 						</a>
 						<a
-							href="account.html"
+							href="account.php"
 							class="text-dark"
 							aria-label="Account">
 							<i class="ri-user-3-line fs-5"></i>
@@ -113,48 +206,68 @@
 			</div>
 		</nav>
 
-		<section class="my-5 py-5">
-			<div class="container text-center mt-3 pt-5">
-				<h2 class="form-weight-bold">Login</h2>
-				<hr class="mx-auto" />
-			</div>
-			<div class="mx-auto container">
-				<form id="login-form">
-					<div class="form-group">
-						<label>Email</label>
-						<input
-							type="text"
-							class="form-control"
-							id="login-email"
-							name="email"
-							placeholder="Email"
-							required />
+		<!-- PAYMENT CONFIRMATION -->
+		<section class="confirmation-section my-5 py-5">
+			<div class="container">
+				<div class="confirmation-card card">
+					<div class="card-body text-center p-5">
+						<!-- Success Icon -->
+						<div class="mb-4">
+							<i class="ri-checkbox-circle-line success-icon"></i>
+						</div>
+
+						<!-- Thank You Message -->
+						<h2 class="mb-3">Thank You for Your Order!</h2>
+						<p class="text-muted mb-4">
+							Your order has been successfully placed. We'll send you a confirmation email shortly.
+						</p>
+
+						<!-- Order Details -->
+						<div class="order-details">
+							<div class="order-details-item">
+								<span class="fw-semibold">Order ID:</span>
+								<span>#<?php echo htmlspecialchars($temp_order_id); ?></span>
+							</div>
+							<div class="order-details-item">
+								<span class="fw-semibold">Order Total:</span>
+								<span class="order-total">$<?php echo number_format($temp_order_total, 2); ?></span>
+							</div>
+							<div class="order-details-item">
+								<span class="fw-semibold">Order Status:</span>
+								<span class="status-badge status-<?php echo strtolower(str_replace('_', '-', $temp_order_status)); ?>">
+									<?php echo ucfirst(str_replace('_', ' ', $temp_order_status)); ?>
+								</span>
+							</div>
+						</div>
+
+						<!-- Additional Information -->
+						<div class="alert alert-info mt-4" role="alert">
+							<i class="ri-information-line me-2"></i>
+							<strong>Next Steps:</strong> You will receive an email confirmation with your order details.
+							You can track your order status in your account dashboard.
+						</div>
+
+						<!-- Action Buttons -->
+						<div class="action-buttons d-grid gap-3 d-md-flex justify-content-md-center">
+							<a href="shop.php" class="btn btn-primary btn-lg">
+								<i class="ri-shopping-bag-line me-2"></i>
+								Continue Shopping
+							</a>
+							<a href="account.php" class="btn btn-outline-primary btn-lg">
+								<i class="ri-file-list-3-line me-2"></i>
+								View My Orders
+							</a>
+						</div>
 					</div>
-					<div class="form-group">
-						<label>Password</label>
-						<input
-							type="password"
-							class="form-control"
-							id="login-password"
-							name="password"
-							placeholder="Password"
-							required />
-					</div>
-					<div class="form-group">
-						<input
-							type="submit"
-							class="btn"
-							id="login-btn"
-							value="Login" />
-					</div>
-					<div>
-						<a
-							href="register.html"
-							id="register_url"
-							>Don's have an account? Register</a
-						>
-					</div>
-				</form>
+				</div>
+
+				<!-- Additional Help -->
+				<div class="text-center mt-4">
+					<p class="text-muted">
+						Need help with your order?
+						<a href="contact.php" class="text-decoration-none">Contact us</a>
+					</p>
+				</div>
 			</div>
 		</section>
 
@@ -180,37 +293,37 @@
 							<li class="mb-2">
 								<a
 									class="text-decoration-none text-white-50"
-									href="#"
-									>Men</a
-								>
+									href="shop.php?category=shoes">
+									Shoes
+								</a>
 							</li>
 							<li class="mb-2">
 								<a
 									class="text-decoration-none text-white-50"
-									href="#"
-									>Women</a
-								>
+									href="shop.php?category=bags">
+									Bags
+								</a>
 							</li>
 							<li class="mb-2">
 								<a
 									class="text-decoration-none text-white-50"
-									href="#"
-									>Boys</a
-								>
+									href="shop.php?category=hats">
+									Hats
+								</a>
 							</li>
 							<li class="mb-2">
 								<a
 									class="text-decoration-none text-white-50"
-									href="#"
-									>Girls</a
-								>
+									href="shop.php?category=watches">
+									Watches
+								</a>
 							</li>
 							<li>
 								<a
 									class="text-decoration-none text-white-50"
-									href="#"
-									>Shoes</a
-								>
+									href="shop.php">
+									All Products
+								</a>
 							</li>
 						</ul>
 					</div>

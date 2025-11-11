@@ -1,3 +1,10 @@
+<?php
+/**
+ * Blog Page - Coming Soon Placeholder
+ */
+
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -8,7 +15,7 @@
 		<meta
 			http-equiv="X-UA-Compatible"
 			content="ie=edge" />
-		<title>Heang's E-Shop</title>
+		<title>Blog - Heang's E-Shop</title>
 		<link
 			href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
 			rel="stylesheet"
@@ -23,9 +30,20 @@
 		<link
 			rel="stylesheet"
 			href="Assets/CSS/style.css" />
-		<link
-			rel="stylesheet"
-			href="Assets/CSS/cart.css" />
+		<style>
+			.coming-soon {
+				min-height: 70vh;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				text-align: center;
+			}
+			.coming-soon-icon {
+				font-size: 8rem;
+				color: #FB774B;
+				margin-bottom: 2rem;
+			}
+		</style>
 	</head>
 	<body>
 		<!--NAVIGATION BAR-->
@@ -34,7 +52,7 @@
 			<div class="container">
 				<a
 					class="navbar-brand d-flex align-items-center"
-					href="index.html"
+					href="index.php"
 					aria-label="eShop home">
 					<img
 						src="Assets/Images/logo.jpeg"
@@ -59,30 +77,30 @@
 					<ul class="navbar-nav mx-lg-auto mb-2 mb-lg-0 gap-lg-2">
 						<li class="nav-item">
 							<a
-								class="nav-link px-3 active"
-								aria-current="page"
-								href="index.html"
+								class="nav-link px-3"
+								href="index.php"
 								>Home</a
 							>
 						</li>
 						<li class="nav-item">
 							<a
 								class="nav-link px-3"
-								href="shop.html"
+								href="shop.php"
 								>Shop</a
 							>
 						</li>
 						<li class="nav-item">
 							<a
-								class="nav-link px-3"
-								href="blog.html"
+								class="nav-link px-3 active"
+								aria-current="page"
+								href="blog.php"
 								>Blog</a
 							>
 						</li>
 						<li class="nav-item">
 							<a
 								class="nav-link px-3"
-								href="contact.html"
+								href="contact.php"
 								>Contact Us</a
 							>
 						</li>
@@ -90,20 +108,26 @@
 					<div
 						class="d-flex align-items-center justify-content-center justify-content-lg-end gap-3 ms-lg-3">
 						<a
-							href="cart.html"
+							href="cart.php"
 							class="text-dark position-relative"
 							aria-label="View cart">
 							<i class="ri-shopping-basket-2-line fs-5"></i>
-							<span
-								class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger px-1 py-0">
-								2
-								<span class="visually-hidden"
-									>items in cart</span
-								>
-							</span>
+							<?php if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0): ?>
+								<?php
+									$cart_count = 0;
+									foreach ($_SESSION['cart'] as $item) {
+										$cart_count += isset($item['product_quantity']) ? $item['product_quantity'] : 1;
+									}
+								?>
+								<span
+									class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger px-1 py-0">
+									<?php echo $cart_count; ?>
+									<span class="visually-hidden">items in cart</span>
+								</span>
+							<?php endif; ?>
 						</a>
 						<a
-							href="account.html"
+							href="account.php"
 							class="text-dark"
 							aria-label="Account">
 							<i class="ri-user-3-line fs-5"></i>
@@ -113,167 +137,28 @@
 			</div>
 		</nav>
 
-		<!-- CART -->
-		<section
-			id="cart"
-			class="cart container my-5 py-5">
-			<div class="container mt-5">
-				<h2 class="font-weight-bold">Your Cart</h2>
-				<hr />
-				<table class="mt-5 pt-5">
-					<tr>
-						<th>Product</th>
-						<th>Quantity</th>
-						<th>Subtotal</th>
-					</tr>
-					<tr>
-						<td>
-							<div class="product-info">
-								<img
-									src="Assets/Images/bag_1.png"
-									alt="Product Image" />
-								<div>
-									<p>Red Printed T-Shirt</p>
-									<small>Price: $50.00</small>
-									<br />
-									<a
-										href="#"
-										class="remove-btn"
-										>Remove</a
-									>
-								</div>
-							</div>
-						</td>
-
-						<td>
-							<input
-								type="number"
-								value="1"
-								min="1" />
-							<a class="edit-btn">Edit</a>
-						</td>
-
-						<td>
-							<span> $ </span>
-							<span class="product-price">50.00</span>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<div class="product-info">
-								<img
-									src="Assets/Images/bag_1.png"
-									alt="Product Image" />
-								<div>
-									<p>Red Printed T-Shirt</p>
-									<small>Price: $50.00</small>
-									<br />
-									<a
-										href="#"
-										class="remove-btn"
-										>Remove</a
-									>
-								</div>
-							</div>
-						</td>
-
-						<td>
-							<input
-								type="number"
-								value="1"
-								min="1" />
-							<a class="edit-btn">Edit</a>
-						</td>
-
-						<td>
-							<span> $ </span>
-							<span class="product-price">50.00</span>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<div class="product-info">
-								<img
-									src="Assets/Images/bag_1.png"
-									alt="Product Image" />
-								<div>
-									<p>Red Printed T-Shirt</p>
-									<small>Price: $50.00</small>
-									<br />
-									<a
-										href="#"
-										class="remove-btn"
-										>Remove</a
-									>
-								</div>
-							</div>
-						</td>
-
-						<td>
-							<input
-								type="number"
-								value="1"
-								min="1" />
-							<a class="edit-btn">Edit</a>
-						</td>
-
-						<td>
-							<span> $ </span>
-							<span class="product-price">50.00</span>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<div class="product-info">
-								<img
-									src="Assets/Images/bag_1.png"
-									alt="Product Image" />
-								<div>
-									<p>Red Printed T-Shirt</p>
-									<small>Price: $50.00</small>
-									<br />
-									<a
-										href="#"
-										class="remove-btn"
-										>Remove</a
-									>
-								</div>
-							</div>
-						</td>
-
-						<td>
-							<input
-								type="number"
-								value="1"
-								min="1" />
-							<a class="edit-btn">Edit</a>
-						</td>
-
-						<td>
-							<span> $ </span>
-							<span class="product-price">50.00</span>
-						</td>
-					</tr>
-				</table>
-			</div>
-
-			<div class="cart-total">
-				<table>
-					<tr>
-						<td>Subtotal</td>
-						<td>$200.00</td>
-					</tr>
-					<tr>
-						<td>Tax</td>
-						<td>$10.00</td>
-					</tr>
-					<tr>
-						<td>Total</td>
-						<td>$210.00</td>
-					</tr>
-				</table>
-				<div class="checkout-container mt-3">
-					<button class="checkout-btn btn">CHECKOUT</button>
+		<!-- Coming Soon Section -->
+		<section class="coming-soon">
+			<div class="container">
+				<div class="row justify-content-center">
+					<div class="col-lg-8">
+						<i class="ri-book-2-line coming-soon-icon"></i>
+						<h1 class="display-3 fw-bold mb-4">Blog Coming Soon</h1>
+						<p class="lead mb-4">
+							We're working hard to bring you insightful articles, product reviews, and style guides.
+							Stay tuned for exciting content about fashion, accessories, and the latest trends!
+						</p>
+						<div class="d-flex justify-content-center gap-3">
+							<a href="index.php" class="btn btn-primary btn-lg">
+								<i class="ri-home-line me-2"></i>
+								Back to Home
+							</a>
+							<a href="shop.php" class="btn btn-outline-primary btn-lg">
+								<i class="ri-shopping-bag-line me-2"></i>
+								Continue Shopping
+							</a>
+						</div>
+					</div>
 				</div>
 			</div>
 		</section>
@@ -300,36 +185,29 @@
 							<li class="mb-2">
 								<a
 									class="text-decoration-none text-white-50"
-									href="#"
-									>Men</a
+									href="shop.php?category=shoes"
+									>Shoes</a
 								>
 							</li>
 							<li class="mb-2">
 								<a
 									class="text-decoration-none text-white-50"
-									href="#"
-									>Women</a
+									href="shop.php?category=bags"
+									>Bags</a
 								>
 							</li>
 							<li class="mb-2">
 								<a
 									class="text-decoration-none text-white-50"
-									href="#"
-									>Boys</a
-								>
-							</li>
-							<li class="mb-2">
-								<a
-									class="text-decoration-none text-white-50"
-									href="#"
-									>Girls</a
+									href="shop.php?category=hats"
+									>Hats</a
 								>
 							</li>
 							<li>
 								<a
 									class="text-decoration-none text-white-50"
-									href="#"
-									>Shoes</a
+									href="shop.php?category=watches"
+									>Watches</a
 								>
 							</li>
 						</ul>

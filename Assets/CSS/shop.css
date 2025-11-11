@@ -1,8 +1,358 @@
-.pagination a {
-	color: var(--primary-color);
+/* ========================================
+   SHADCN-INSPIRED SHOP PAGE STYLES
+   Modern, clean design with subtle shadows
+   ======================================== */
+
+/* CSS Variables - shadcn color palette */
+:root {
+	--background: 0 0% 100%;
+	--foreground: 222.2 84% 4.9%;
+	--card: 0 0% 100%;
+	--card-foreground: 222.2 84% 4.9%;
+	--primary: 221.2 83.2% 53.3%;
+	--primary-foreground: 210 40% 98%;
+	--secondary: 210 40% 96.1%;
+	--secondary-foreground: 222.2 47.4% 11.2%;
+	--muted: 210 40% 96.1%;
+	--muted-foreground: 215.4 16.3% 46.9%;
+	--accent: 210 40% 96.1%;
+	--accent-foreground: 222.2 47.4% 11.2%;
+	--border: 214.3 31.8% 91.4%;
+	--input: 214.3 31.8% 91.4%;
+	--ring: 221.2 83.2% 53.3%;
+	--radius: 0.5rem;
 }
 
-.pagination li:hover a {
-	color: #fff;
-	background-color: var(--primary-color);
+/* ========================================
+   PAGINATION STYLES
+   ======================================== */
+.pagination {
+	display: flex;
+	gap: 0.5rem;
+	list-style: none;
+	padding: 0;
+	margin: 2rem 0;
+}
+
+.pagination li {
+	display: inline-block;
+}
+
+.pagination a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 2.5rem;
+	height: 2.5rem;
+	padding: 0.5rem 0.75rem;
+	border: 1px solid hsl(var(--border));
+	border-radius: var(--radius);
+	background: hsl(var(--background));
+	color: hsl(var(--foreground));
+	font-weight: 500;
+	font-size: 0.875rem;
+	transition: all 0.15s ease-in-out;
+}
+
+.pagination a:hover {
+	background: hsl(var(--primary));
+	color: hsl(var(--primary-foreground));
+	border-color: hsl(var(--primary));
+}
+
+.pagination li.active a {
+	background: hsl(var(--primary));
+	color: hsl(var(--primary-foreground));
+	border-color: hsl(var(--primary));
+}
+
+/* ========================================
+   PRODUCT CARD STYLES - shadcn design
+   ======================================== */
+.product-card {
+	border: 1px solid hsl(var(--border));
+	border-radius: var(--radius);
+	overflow: hidden;
+	transition: all 0.2s ease-in-out;
+	background: hsl(var(--card));
+	box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.product-card:hover {
+	box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+	border-color: hsl(var(--primary) / 0.5);
+	transform: translateY(-4px);
+}
+
+/* ========================================
+   PRODUCT IMAGE WRAPPER
+   ======================================== */
+.product-img-wrapper {
+	position: relative;
+	overflow: hidden;
+	background: hsl(var(--muted));
+	height: 280px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.product-img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 0.3s ease-in-out;
+}
+
+.product-img-wrapper:hover .product-img {
+	transform: scale(1.08);
+}
+
+/* ========================================
+   PRODUCT OVERLAY
+   ======================================== */
+.product-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	transition: opacity 0.2s ease-in-out;
+}
+
+.product-img-wrapper:hover .product-overlay {
+	opacity: 1;
+}
+
+.product-overlay .btn {
+	transform: translateY(10px);
+	transition: transform 0.2s ease-in-out;
+}
+
+.product-img-wrapper:hover .product-overlay .btn {
+	transform: translateY(0);
+}
+
+/* ========================================
+   PRODUCT INFO SECTION
+   ======================================== */
+.product-info {
+	background: hsl(var(--card));
+	padding: 1.25rem;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.p-name {
+	font-size: 1rem;
+	font-weight: 600;
+	color: hsl(var(--foreground));
+	min-height: 48px;
+	line-height: 1.5;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	letter-spacing: -0.01em;
+}
+
+.p-price {
+	color: hsl(var(--primary));
+	font-weight: 700;
+	font-size: 1.5rem;
+	letter-spacing: -0.02em;
+}
+
+.product-info .text-muted {
+	text-transform: capitalize;
+	font-weight: 500;
+	font-size: 0.875rem;
+	color: hsl(var(--muted-foreground));
+	letter-spacing: 0.5px;
+}
+
+/* ========================================
+   STAR RATINGS
+   ======================================== */
+.star {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.star i {
+	font-size: 0.875rem;
+	color: hsl(38 92% 50%);
+}
+
+/* ========================================
+   BUY BUTTON - shadcn style
+   ======================================== */
+.buy-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	padding: 0.625rem 1rem;
+	background: hsl(var(--primary));
+	color: hsl(var(--primary-foreground));
+	text-decoration: none;
+	border-radius: var(--radius);
+	border: 1px solid hsl(var(--primary));
+	transition: all 0.15s ease-in-out;
+	font-weight: 600;
+	font-size: 0.875rem;
+}
+
+.buy-btn:hover {
+	background: hsl(var(--primary) / 0.9);
+	color: hsl(var(--primary-foreground));
+	text-decoration: none;
+}
+
+.buy-btn:active {
+	transform: scale(0.98);
+}
+
+/* ========================================
+   SHOP HEADER
+   ======================================== */
+#shop {
+	padding: 2rem 0;
+}
+
+#shop h3 {
+	font-weight: 700;
+	color: hsl(var(--foreground));
+	font-size: 1.875rem;
+	margin-bottom: 1rem;
+	letter-spacing: -0.025em;
+}
+
+#shop hr {
+	width: 60px;
+	height: 3px;
+	background: hsl(var(--primary));
+	border: none;
+	border-radius: var(--radius);
+	margin: 0 0 2rem 0;
+}
+
+/* ========================================
+   EMPTY STATE
+   ======================================== */
+.col-12.text-center.py-5 {
+	min-height: 400px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+}
+
+.col-12.text-center.py-5 h3 {
+	color: hsl(var(--muted-foreground));
+	font-size: 1.5rem;
+}
+
+.col-12.text-center.py-5 p {
+	color: hsl(var(--muted-foreground));
+	font-size: 1rem;
+}
+
+/* ========================================
+   RESPONSIVE ADJUSTMENTS
+   ======================================== */
+@media (max-width: 768px) {
+	.product-img-wrapper {
+		height: 220px;
+	}
+
+	.p-name {
+		min-height: auto;
+		font-size: 0.9375rem;
+	}
+
+	.p-price {
+		font-size: 1.25rem;
+	}
+
+	.product-card:hover {
+		transform: translateY(-2px);
+	}
+
+	.product-info {
+		padding: 1rem;
+	}
+
+	#shop h3 {
+		font-size: 1.5rem;
+	}
+
+	.pagination a {
+		min-width: 2.25rem;
+		height: 2.25rem;
+		font-size: 0.8125rem;
+	}
+}
+
+@media (max-width: 576px) {
+	.product-img-wrapper {
+		height: 200px;
+	}
+
+	#shop h3 {
+		font-size: 1.25rem;
+	}
+
+	.product-info {
+		padding: 0.875rem;
+		gap: 0.5rem;
+	}
+
+	.p-name {
+		min-height: auto;
+		font-size: 0.875rem;
+	}
+
+	.p-price {
+		font-size: 1.125rem;
+	}
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+.row.g-4 {
+	gap: 1.5rem;
+}
+
+/* Smooth transitions with cubic-bezier */
+* {
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================================
+   FOCUS VISIBLE (Accessibility)
+   ======================================== */
+*:focus-visible {
+	outline: 2px solid hsl(var(--ring));
+	outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible {
+	outline: 2px solid hsl(var(--ring));
+	outline-offset: 2px;
 }
