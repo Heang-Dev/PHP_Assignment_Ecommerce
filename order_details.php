@@ -87,46 +87,9 @@ if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
 		<link
 			rel="stylesheet"
 			href="Assets/CSS/style.css" />
-		<style>
-			.order-details-section {
-				margin-top: 100px;
-				min-height: 70vh;
-			}
-			.order-header {
-				background: linear-gradient(135deg, #FB774B 0%, #ff9068 100%);
-				color: white;
-				padding: 2rem;
-				border-radius: 10px;
-				margin-bottom: 2rem;
-			}
-			.order-info-card {
-				border: none;
-				box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-				margin-bottom: 1.5rem;
-			}
-			.order-items-table {
-				background: white;
-				border-radius: 10px;
-				overflow: hidden;
-			}
-			.product-img-small {
-				width: 60px;
-				height: 60px;
-				object-fit: cover;
-				border-radius: 5px;
-			}
-			.status-badge {
-				font-size: 0.875rem;
-				padding: 0.5rem 1rem;
-			}
-			.btn-back {
-				background: #f8f9fa;
-				border: 1px solid #dee2e6;
-			}
-			.btn-back:hover {
-				background: #e9ecef;
-			}
-		</style>
+		<link
+			rel="stylesheet"
+			href="Assets/CSS/order_details.css" />
 	</head>
 	<body>
 		<!--NAVIGATION BAR-->
@@ -213,11 +176,11 @@ if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
 			</div>
 		</nav>
 
-		<section class="order-details-section my-5 py-5">
+		<section class="order-details-section">
 			<div class="container">
 				<!-- Back Button -->
 				<div class="mb-3">
-					<a href="account.php" class="btn btn-back">
+					<a href="account.php#orders" class="btn btn-back">
 						<i class="ri-arrow-left-line me-2"></i>
 						Back to My Orders
 					</a>

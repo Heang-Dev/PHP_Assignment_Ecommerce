@@ -211,103 +211,59 @@ if (isset($_GET['success'])) {
 			</div>
 		</nav>
 
-		<section class="account-section my-5 py-5">
+		<section class="account-section">
 			<div class="container">
-				<div class="row">
-					<div class="col-lg-3 col-md-4 mb-4">
-						<div class="card">
-							<div class="card-body text-center">
-								<div class="mb-3">
-									<i class="ri-user-3-fill fs-1 text-primary"></i>
-								</div>
-								<h5 class="card-title"><?php echo htmlspecialchars($_SESSION['user_name']); ?></h5>
-								<p class="card-text small text-muted"><?php echo htmlspecialchars($_SESSION['user_email']); ?></p>
-								<hr>
-								<div class="d-grid gap-2">
-									<a href="#orders" class="btn btn-sm btn-outline-primary">My Orders</a>
-									<a href="#change-password" class="btn btn-sm btn-outline-secondary">Change Password</a>
-									<a href="account.php?logout=1" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to logout?')">Logout</a>
+				<?php if (!empty($error_message)): ?>
+					<div class="alert alert-danger alert-dismissible fade show" role="alert">
+						<i class="ri-error-warning-line me-2"></i>
+						<?php echo $error_message; ?>
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+					</div>
+				<?php endif; ?>
+
+				<?php if (!empty($success_message)): ?>
+					<div class="alert alert-success alert-dismissible fade show" role="alert">
+						<i class="ri-checkbox-circle-line me-2"></i>
+						<?php echo $success_message; ?>
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+					</div>
+				<?php endif; ?>
+
+				<div class="row g-3">
+					<!-- Profile Card -->
+					<div class="col-lg-3 col-md-4">
+						<div id="profile">
+							<h3 class="mb-3">
+								<i class="ri-user-3-line me-2"></i>
+								Profile
+							</h3>
+							<div class="card">
+								<div class="card-body text-center">
+									<div class="mb-3">
+										<img
+											src="https://ui-avatars.com/api/?name=<?php echo urlencode($_SESSION['user_name']); ?>&size=80&background=000000&color=ffffff&bold=true"
+											alt="<?php echo htmlspecialchars($_SESSION['user_name']); ?>"
+											class="rounded-circle profile-avatar"
+											width="80"
+											height="80" />
+									</div>
+									<h5 class="card-title"><?php echo htmlspecialchars($_SESSION['user_name']); ?></h5>
+									<p class="card-text small text-muted"><?php echo htmlspecialchars($_SESSION['user_email']); ?></p>
+									<hr class="my-2">
+									<div class="d-grid gap-2">
+										<a href="#orders" class="btn btn-sm btn-outline-primary">My Orders</a>
+										<a href="#change-password" class="btn btn-sm btn-outline-secondary">Change Password</a>
+										<a href="account.php?logout=1" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to logout?')">Logout</a>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 
+					<!-- Change Password Section -->
 					<div class="col-lg-9 col-md-8">
-						<?php if (!empty($error_message)): ?>
-							<div class="alert alert-danger alert-dismissible fade show" role="alert">
-								<i class="ri-error-warning-line me-2"></i>
-								<?php echo $error_message; ?>
-								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-							</div>
-						<?php endif; ?>
-
-						<?php if (!empty($success_message)): ?>
-							<div class="alert alert-success alert-dismissible fade show" role="alert">
-								<i class="ri-checkbox-circle-line me-2"></i>
-								<?php echo $success_message; ?>
-								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-							</div>
-						<?php endif; ?>
-
-						<!-- Orders Section -->
-						<div id="orders" class="mb-5">
-							<h3 class="mb-4">
-								<i class="ri-shopping-bag-line me-2"></i>
-								My Orders
-							</h3>
-
-							<?php if (empty($orders)): ?>
-								<div class="alert alert-info">
-									<i class="ri-information-line me-2"></i>
-									You haven't placed any orders yet. <a href="shop.php" class="alert-link">Start shopping now!</a>
-								</div>
-							<?php else: ?>
-								<div class="row g-3">
-									<?php foreach ($orders as $order): ?>
-										<div class="col-12">
-											<div class="card order-card">
-												<div class="card-body">
-													<div class="row align-items-center">
-														<div class="col-md-7">
-															<h6 class="mb-2">
-																Order #<?php echo $order['order_id']; ?>
-																<span class="badge bg-<?php echo $order['order_status'] === 'on_hold' ? 'warning' : ($order['order_status'] === 'paid' ? 'success' : 'secondary'); ?> status-badge">
-																	<?php echo ucfirst(str_replace('_', ' ', $order['order_status'])); ?>
-																</span>
-															</h6>
-															<p class="mb-1 small text-muted">
-																<i class="ri-calendar-line me-1"></i>
-																<?php echo date('F j, Y, g:i a', strtotime($order['order_date'])); ?>
-															</p>
-															<p class="mb-1 small">
-																<i class="ri-map-pin-line me-1"></i>
-																<?php echo htmlspecialchars($order['user_city'] . ', ' . $order['user_address']); ?>
-															</p>
-															<p class="mb-0 small">
-																<i class="ri-phone-line me-1"></i>
-																<?php echo htmlspecialchars($order['user_phone']); ?>
-															</p>
-														</div>
-														<div class="col-md-5 text-md-end mt-3 mt-md-0">
-															<h5 class="mb-2 text-primary">$<?php echo number_format($order['order_cost'], 2); ?></h5>
-															<p class="mb-2 small text-muted"><?php echo $order['item_count']; ?> item(s)</p>
-															<a href="order_details.php?order_id=<?php echo $order['order_id']; ?>" class="btn btn-sm btn-outline-primary">
-																<i class="ri-eye-line me-1"></i>
-																View Details
-															</a>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									<?php endforeach; ?>
-								</div>
-							<?php endif; ?>
-						</div>
-
-						<!-- Change Password Section -->
 						<div id="change-password">
-							<h3 class="mb-4">
+							<h3 class="mb-3">
 								<i class="ri-lock-password-line me-2"></i>
 								Change Password
 							</h3>
@@ -351,6 +307,62 @@ if (isset($_GET['success'])) {
 							</div>
 						</div>
 					</div>
+				</div>
+
+				<!-- Orders Section - Full Width -->
+				<div id="orders" class="mt-3">
+					<h3 class="mb-3">
+						<i class="ri-shopping-bag-line me-2"></i>
+						My Orders
+					</h3>
+
+					<?php if (empty($orders)): ?>
+						<div class="alert alert-info">
+							<i class="ri-information-line me-2"></i>
+							You haven't placed any orders yet. <a href="shop.php" class="alert-link">Start shopping now!</a>
+						</div>
+					<?php else: ?>
+						<div class="row g-2">
+							<?php foreach ($orders as $order): ?>
+								<div class="col-12">
+									<div class="card order-card">
+										<div class="card-body">
+											<div class="row align-items-center">
+												<div class="col-md-7">
+													<h6 class="mb-2">
+														Order #<?php echo $order['order_id']; ?>
+														<span class="badge bg-<?php echo $order['order_status'] === 'on_hold' ? 'warning' : ($order['order_status'] === 'paid' ? 'success' : 'secondary'); ?> status-badge">
+															<?php echo ucfirst(str_replace('_', ' ', $order['order_status'])); ?>
+														</span>
+													</h6>
+													<p class="mb-1 small text-muted">
+														<i class="ri-calendar-line me-1"></i>
+														<?php echo date('F j, Y, g:i a', strtotime($order['order_date'])); ?>
+													</p>
+													<p class="mb-1 small">
+														<i class="ri-map-pin-line me-1"></i>
+														<?php echo htmlspecialchars($order['user_city'] . ', ' . $order['user_address']); ?>
+													</p>
+													<p class="mb-0 small">
+														<i class="ri-phone-line me-1"></i>
+														<?php echo htmlspecialchars($order['user_phone']); ?>
+													</p>
+												</div>
+												<div class="col-md-5 text-md-end mt-3 mt-md-0">
+													<h5 class="mb-2 text-primary">$<?php echo number_format($order['order_cost'], 2); ?></h5>
+													<p class="mb-2 small text-muted"><?php echo $order['item_count']; ?> item(s)</p>
+													<a href="order_details.php?order_id=<?php echo $order['order_id']; ?>" class="btn btn-sm btn-outline-primary">
+														<i class="ri-eye-line me-1"></i>
+														View Details
+													</a>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							<?php endforeach; ?>
+						</div>
+					<?php endif; ?>
 				</div>
 			</div>
 		</section>
